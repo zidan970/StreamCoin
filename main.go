@@ -1,23 +1,41 @@
 package main
 
 import (
-	"fmt"
 	"log"
-	"zidan/AccountServiceAppProject/controllers"
+	"zidan/gin-rest/handlers"
 
-	_ "github.com/go-sql-driver/mysql"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	// make connection
-	db, errInitDB := controllers.InitDB()
-	if errInitDB != nil {
-		log.Fatal("init db is failed: ", errInitDB)
+	// init db
+	db, errInit := handlers.InitDB()
+	if errInit != nil {
+		log.Fatal("db initialization is failed: ", errInit)
 	}
 
-	defer db.Close()
+	// init handler
+	handler := handlers.InitHandler(db)
 
-	fmt.Println()
+	// init gin
+	r := gin.New()
 
-	controllers.Menu(db)
+	r.GET("/hello", handler.TestHello)
+	// keep in mind that in the Gin framework, handlers for routes must have the appropriate format
+	// that fits gin.HandlerFunc, which has type SIGNATURE func(*gin.Context).
+	// This means that the handler must accept the *gin.Context parameter and return VOID or ERROR.
+	r.GET("/count", handler.TestCount)
+
+	r.Run()
 }
+
+// old school: var db, db used in parameter
+// modern: db used in parameter init handler, return a struct that have db as a field, use that struct for every function (now it's called method)
+
+// type Handler struct {
+// 	db *gorm.DB
+// }
+
+// func newHandler(db *gorm.DB) *Handler {
+// 	return &Handler{db}
+// }
