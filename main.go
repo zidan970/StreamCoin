@@ -2,29 +2,31 @@ package main
 
 import (
 	"log"
-	"zidan/gin-rest/handlers"
+	"zidan/gin-rest/apps"
+	"zidan/gin-rest/features/user/handler"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	// init db
-	db, errInit := handlers.InitDB()
+	db, errInit := apps.InitDB()
 	if errInit != nil {
 		log.Fatal("db initialization is failed: ", errInit)
 	}
 
 	// init handler
-	handler := handlers.InitHandler(db)
+	hr := handler.InitHandler(db)
 
 	// init gin
 	r := gin.New()
 
-	r.GET("/hello", handler.TestHello)
+	r.GET("/hello", hr.TestHello)
 	// keep in mind that in the Gin framework, handlers for routes must have the appropriate format
 	// that fits gin.HandlerFunc, which has type SIGNATURE func(*gin.Context).
 	// This means that the handler must accept the *gin.Context parameter and return VOID or ERROR.
-	r.GET("/count", handler.TestCount)
+	r.GET("/count", hr.TestCount)
+	r.POST("/users", hr.Register)
 
 	r.Run()
 }

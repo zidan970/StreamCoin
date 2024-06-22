@@ -1,8 +1,7 @@
-package handlers
+package apps
 
 import (
 	"log"
-	"zidan/gin-rest/entities"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -29,5 +28,5 @@ func Hello() {
 }
 
 func MigrateSchema(db *gorm.DB) error {
-	return db.AutoMigrate(&entities.Accounts{})
+	return db.AutoMigrate(&User{})
 }
